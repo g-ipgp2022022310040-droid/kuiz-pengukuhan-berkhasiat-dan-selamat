@@ -1,0 +1,866 @@
+<!doctype html>
+<html lang="ms-MY">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fbf7ed">
+  <meta name="description" content="Kuiz pengukuhan Pendidikan Kesihatan Tahun 1 tentang makanan berkhasiat.">
+  <title>Berkhasiat dan Selamat</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Trebuchet MS", system-ui, sans-serif;
+      color: #2e2146;
+      background: #fbf7ed;
+      --ink: #2e2146;
+      --purple: #522a91;
+      --muted: #625772;
+      --lime: #e9fb9d;
+      --green: #226848;
+      --red: #952d43;
+      --line: #e5daee;
+      --paper: #fffefa;
+    }
+
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body { margin: 0; }
+    body::before {
+      position: fixed;
+      z-index: -1;
+      inset: 0;
+      background: radial-gradient(#d4bfeb 1px, transparent 1px) 0 0 / 24px 24px;
+      opacity: .38;
+      content: "";
+      pointer-events: none;
+    }
+
+    button { font: inherit; cursor: pointer; }
+    button:disabled { cursor: default; }
+    button:focus-visible, [tabindex="-1"]:focus-visible {
+      outline: 3px solid #6b36b1;
+      outline-offset: 4px;
+    }
+
+    .shell { width: min(1080px, calc(100% - 2.5rem)); margin-inline: auto; }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding-block: 1.65rem 1.35rem;
+    }
+    .brand { display: flex; align-items: center; gap: .75rem; }
+    .brand-icon {
+      display: grid;
+      flex: none;
+      place-items: center;
+      width: 3rem;
+      height: 3rem;
+      border-radius: 1rem;
+      background: var(--purple);
+      color: var(--lime);
+      box-shadow: 0 3px 0 #392064;
+    }
+    .brand strong, .brand small { display: block; }
+    .brand strong { font-size: 1rem; line-height: 1.2; }
+    .brand small { margin-top: .15rem; color: var(--muted); font-size: .85rem; }
+    .icon { width: 1.25rem; height: 1.25rem; flex: none; }
+    .sound-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .55rem;
+      min-height: 3rem;
+      padding: .45rem .8rem;
+      border: 1px solid var(--line);
+      border-radius: .9rem;
+      background: var(--paper);
+      color: var(--ink);
+      font-weight: 800;
+      box-shadow: 0 3px 0 #eadff2;
+    }
+    .sound-button:hover:not(:disabled) { background: #f6f0fd; }
+    .sound-state {
+      padding: .16rem .4rem;
+      border-radius: .38rem;
+      background: #e7f6e4;
+      color: #23583b;
+      font-size: .74rem;
+    }
+    .sound-button[aria-pressed="false"] .sound-state { background: #ede8f3; color: #625772; }
+    .sound-button[aria-pressed="true"] .sound-off,
+    .sound-button[aria-pressed="false"] .sound-on { display: none; }
+
+    main { padding-bottom: 2rem; }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.08fr 1fr;
+      align-items: center;
+      overflow: hidden;
+      padding: clamp(1.6rem, 4.35vw, 3.25rem);
+      border-radius: 2rem;
+      background: radial-gradient(ellipse at 95% 45%, #743db5, transparent 63%),
+        linear-gradient(130deg, #38206e, #4f278d);
+      color: #fff;
+      box-shadow: 0 8px 0 #dac8ec, 0 18px 40px #4a28801b;
+    }
+    .hero-copy { position: relative; z-index: 1; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      padding: .42rem .72rem;
+      border-radius: 2rem;
+      background: var(--lime);
+      color: #30254a;
+      font-size: .77rem;
+      font-weight: 900;
+      letter-spacing: .085em;
+      line-height: 1.3;
+      text-transform: uppercase;
+    }
+    .eyebrow .icon { width: .9rem; height: .9rem; }
+    .hero h1 {
+      margin: .8rem 0 .9rem;
+      font-size: clamp(2.75rem, 5.3vw, 4.65rem);
+      line-height: 1.02;
+      letter-spacing: -.059em;
+      font-weight: 900;
+    }
+    .hero h1 span { display: block; color: var(--lime); }
+    .hero p { margin: 0; color: #fbf1ff; font-size: clamp(1.16rem, 2.15vw, 1.4rem); }
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.1rem;
+      margin-top: 1.8rem;
+    }
+    .primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .6rem;
+      min-height: 3.65rem;
+      padding: .75rem 1.3rem;
+      border: 0;
+      border-radius: .9rem;
+      background: var(--lime);
+      color: #302046;
+      font-size: 1.15rem;
+      font-weight: 900;
+      box-shadow: 0 5px 0 #302046;
+    }
+    .primary:hover:not(:disabled) { background: #f3ffbd; }
+    .primary:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 2px 0 #302046; }
+    .hero .primary:focus-visible, .result .primary:focus-visible,
+    .result h1:focus-visible { outline-color: var(--lime); }
+    .hero-meta { color: #f0e4fc; font-size: .95rem; font-weight: 700; }
+    .hero-art { display: block; width: 106%; max-width: 490px; margin: -1.4rem 0 -1.4rem -2%; }
+
+    .topics { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.65rem; }
+    .topic {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.1rem 1.2rem;
+      border: 1px solid var(--line);
+      border-radius: 1.2rem;
+      background: var(--paper);
+      box-shadow: 0 4px 0 #eee4f4;
+    }
+    .topic-icon {
+      display: grid;
+      flex: none;
+      place-items: center;
+      width: 3.65rem;
+      height: 3.65rem;
+      border-radius: 1rem;
+      background: #ffe6c7;
+      color: #9e4525;
+    }
+    .topic-icon .icon { width: 1.85rem; height: 1.85rem; }
+    .topic:nth-child(2) .topic-icon { background: #def2dc; color: #2b674b; }
+    .topic p { margin: 0; color: var(--muted); font-size: .86rem; font-weight: 800; }
+    .topic h2 { margin: .2rem 0 0; font-size: clamp(1.07rem, 2vw, 1.27rem); line-height: 1.24; }
+
+    .play-screen { width: min(100%, 840px); margin-inline: auto; }
+    .progress-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: .3rem 1rem;
+      margin-bottom: .65rem;
+    }
+    .quiz-name { margin: 0; color: var(--muted); font-weight: 800; }
+    .progress-label { margin: 0; color: var(--purple); font-weight: 900; }
+    .progress-steps { display: grid; grid-template-columns: repeat(6, 1fr); gap: .4rem; margin-bottom: 1rem; }
+    .progress-steps span { height: .5rem; border-radius: 1rem; background: #e7ddef; }
+    .progress-steps .done { background: #9568c4; }
+    .progress-steps .current { background: var(--purple); }
+
+    .question-card {
+      padding: clamp(1.2rem, 4vw, 2.3rem);
+      border: 1px solid var(--line);
+      border-radius: 1.75rem;
+      background: var(--paper);
+      box-shadow: 0 6px 0 #e9ddf1, 0 12px 30px #4022670b;
+    }
+    .question-card .eyebrow { background: #ffedd6; color: #723e29; letter-spacing: .015em; text-transform: none; }
+    .question-card .eyebrow.part-b { background: #e1f3e1; color: #265d43; }
+    .question-card h1 {
+      margin: .78rem 0 .45rem;
+      font-size: clamp(1.63rem, 3.3vw, 2.35rem);
+      line-height: 1.16;
+      letter-spacing: -.026em;
+    }
+    .instruction { margin: 0 0 1.15rem; color: var(--muted); font-size: 1.125rem; }
+    .answers { display: grid; gap: .62rem; }
+    .answer {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: .9rem;
+      width: 100%;
+      min-height: 3.8rem;
+      padding: .55rem .85rem;
+      border: 2px solid #e9def3;
+      border-radius: .9rem;
+      background: #fbf7ff;
+      color: var(--ink);
+      text-align: start;
+      font-size: clamp(1.09rem, 2vw, 1.3rem);
+      font-weight: 800;
+    }
+    .answer:hover:not(:disabled) { border-color: #9065bc; background: #f3e9ff; }
+    .answer:active:not(:disabled) { background: #ecdcff; }
+    .letter {
+      display: grid;
+      place-items: center;
+      width: 2.35rem;
+      height: 2.35rem;
+      border-radius: .62rem;
+      background: #ede1f9;
+      color: #563288;
+      font-size: 1.1rem;
+      font-weight: 900;
+    }
+    .answer-copy { overflow-wrap: anywhere; }
+    .answer.correct { border-color: #62a782; background: #eaf7e9; }
+    .answer.correct .letter { background: #d4efdb; color: var(--green); }
+    .answer.incorrect { border-color: #cb7889; background: #fff0f1; }
+    .answer.incorrect .letter { background: #f8dbe0; color: var(--red); }
+
+    .feedback {
+      display: flex;
+      align-items: flex-start;
+      gap: .75rem;
+      margin-top: .95rem;
+      padding: .85rem 1rem;
+      border-radius: .85rem;
+      background: #e6f6e7;
+      color: #24583a;
+    }
+    .feedback.incorrect { background: #fff0e7; color: #73391e; }
+    .feedback-icon {
+      display: grid;
+      flex: none;
+      place-items: center;
+      width: 1.9rem;
+      height: 1.9rem;
+      border-radius: 50%;
+      background: #ccebd2;
+      font-weight: 900;
+    }
+    .feedback.incorrect .feedback-icon { background: #f8dac6; }
+    .feedback h2 { margin: 0 0 .12rem; font-size: 1.16rem; }
+    .feedback p { margin: 0; font-size: 1rem; line-height: 1.4; }
+    .quiz-actions { display: flex; justify-content: flex-end; margin-top: 1rem; }
+    .next { background: var(--purple); color: #fff; box-shadow: 0 5px 0 #36205d; }
+    .next:hover:not(:disabled) { background: #6235a3; }
+    .next:disabled { background: #f0e9f5; color: #6e617b; box-shadow: 0 4px 0 #e9dff0; }
+
+    .result {
+      position: relative;
+      overflow: hidden;
+      width: min(100%, 730px);
+      margin: .5rem auto 0;
+      padding: clamp(1.8rem, 5vw, 3.2rem) 1.2rem;
+      border-radius: 2rem;
+      background: radial-gradient(ellipse at top, #7643b0, transparent 75%), #412277;
+      color: #fff;
+      text-align: center;
+      box-shadow: 0 8px 0 #dac8ec;
+    }
+    .result-mark {
+      display: grid;
+      place-items: center;
+      width: 4.3rem;
+      height: 4.3rem;
+      margin: 0 auto .85rem;
+      border-radius: 1.4rem;
+      background: var(--lime);
+      color: #472779;
+      box-shadow: 0 5px 0 #2c184c;
+    }
+    .result-mark .icon { width: 2.4rem; height: 2.4rem; }
+    .result h1 { margin: 0 0 .4rem; font-size: clamp(2rem, 5.5vw, 3.3rem); line-height: 1.13; }
+    .result-message { margin: 0; color: #f4eafa; font-size: 1.11rem; }
+    .score-card {
+      width: min(100%, 265px);
+      margin: 1.2rem auto 1.35rem;
+      padding: .85rem 1.15rem;
+      border: 1px solid #9876c4;
+      border-radius: 1rem;
+      background: #2f19554f;
+    }
+    .score-label { margin: 0; color: #f3e9fa; font-size: .98rem; font-weight: 800; }
+    .score-value { margin: .15rem 0 0; color: var(--lime); font-size: 2.65rem; font-weight: 900; line-height: 1.08; }
+    .score-value small { color: #f3e9fa; font-size: 1.03rem; }
+
+    @media (max-width: 680px) {
+      .shell { width: calc(100% - 1.5rem); }
+      .topbar { gap: .5rem; padding-block: 1rem; }
+      .brand { gap: .55rem; }
+      .brand-icon { width: 2.5rem; height: 2.5rem; border-radius: .8rem; }
+      .brand strong { font-size: .87rem; }
+      .brand small { font-size: .78rem; }
+      .sound-button { gap: .3rem; min-height: 2.75rem; padding-inline: .5rem; font-size: .86rem; }
+      .sound-button .icon { width: 1rem; height: 1rem; }
+      .sound-state { padding-inline: .26rem; }
+      .hero { grid-template-columns: 1fr; padding: 1.5rem 1.35rem .6rem; border-radius: 1.45rem; }
+      .hero h1 { font-size: clamp(2.22rem, 10vw, 3.85rem); }
+      .hero-actions { gap: .8rem; margin-top: 1.25rem; }
+      .hero-meta { font-size: .86rem; }
+      .hero-art { width: min(100%, 325px); margin: -.1rem auto -.25rem; }
+      .topics { grid-template-columns: 1fr; gap: .7rem; margin-top: 1.3rem; }
+      .topic { padding: .85rem; gap: .75rem; }
+      .topic-icon { width: 3rem; height: 3rem; border-radius: .8rem; }
+      .topic-icon .icon { width: 1.5rem; height: 1.5rem; }
+      .quiz-name, .progress-label { font-size: .9rem; }
+      .question-card { border-radius: 1.25rem; }
+      .answer { padding-inline: .65rem; gap: .66rem; }
+      .quiz-actions .primary { width: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .primary:active:not(:disabled) { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="shell topbar">
+    <div class="brand">
+      <span class="brand-icon">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 12h16a8 8 0 0 1-16 0ZM9 22h6M12 12c0-5 3-8 7-8 0 4-3 7-7 8ZM12 10C8 10 5 8 5 4c4 0 7 2 7 6Z"/>
+        </svg>
+      </span>
+      <div>
+        <strong>Pendidikan Kesihatan</strong>
+        <small>Tahun 1</small>
+      </div>
+    </div>
+
+    <button class="sound-button" id="sound-toggle" type="button" aria-label="Bunyi" aria-pressed="true">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M4 9v6h4l5 4V5L8 9H4Z"/>
+        <path class="sound-on" d="M16 9a4 4 0 0 1 0 6m2-8a7 7 0 0 1 0 10"/>
+        <path class="sound-off" d="m16 10 5 5m0-5-5 5"/>
+      </svg>
+      <span>Bunyi</span>
+      <span class="sound-state" id="sound-state" aria-hidden="true">Hidup</span>
+    </button>
+  </header>
+
+  <main class="shell">
+    <section id="intro" aria-labelledby="intro-title">
+      <div class="hero">
+        <div class="hero-copy">
+          <span class="eyebrow">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 1c1.3 6.5 4.5 9.7 11 11-6.5 1.3-9.7 4.5-11 11C10.7 16.5 7.5 13.3 1 12 7.5 10.7 10.7 7.5 12 1Z"/>
+            </svg>
+            Kuiz Pengukuhan
+          </span>
+          <h1 id="intro-title">Berkhasiat <span>dan Selamat</span></h1>
+          <p>Pilih satu jawapan yang betul.</p>
+          <div class="hero-actions">
+            <button class="primary" id="start" type="button">
+              <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5a1 1 0 0 0-1.5.9v11.2a1 1 0 0 0 1.5.9l9-5.6a1.1 1.1 0 0 0 0-1.8Z"/></svg>
+              Mula Kuiz
+            </button>
+            <span class="hero-meta">6 soalan · 2 bahagian</span>
+          </div>
+        </div>
+
+        <svg class="hero-art" viewBox="0 0 480 380" fill="none" aria-hidden="true" focusable="false">
+          <defs>
+            <radialGradient id="art-glow" cx="0" cy="0" r="1" gradientTransform="matrix(0 173 -173 0 246 181)" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#b57af0" stop-opacity=".56"/>
+              <stop offset="1" stop-color="#a46dd9" stop-opacity=".12"/>
+            </radialGradient>
+            <linearGradient id="leaf" x1="193" y1="94" x2="262" y2="239" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#d4fa82"/><stop offset="1" stop-color="#38a975"/>
+            </linearGradient>
+            <linearGradient id="banana" x1="120" y1="124" x2="174" y2="228" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#fff18b"/><stop offset="1" stop-color="#ffbd4f"/>
+            </linearGradient>
+            <linearGradient id="lunchbox" x1="233" y1="241" x2="240" y2="327" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#92ecc4"/><stop offset="1" stop-color="#5bcc9d"/>
+            </linearGradient>
+            <linearGradient id="carton" x1="298" y1="108" x2="386" y2="244" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#fffaf3"/><stop offset="1" stop-color="#dce2ff"/>
+            </linearGradient>
+          </defs>
+
+          <circle cx="246" cy="183" r="157" fill="url(#art-glow)"/>
+          <circle cx="246" cy="183" r="157" stroke="#d7adfb" stroke-opacity=".45" stroke-width="1.4" stroke-dasharray="4 9"/>
+          <ellipse cx="249" cy="326" rx="171" ry="19" fill="#301659" fill-opacity=".5"/>
+          <path d="M76 109v26m-13-13h26M398 79v18m-9-9h18" stroke="#f5dcff" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M405 169c2 10 7 15 17 17-10 2-15 7-17 17-2-10-7-15-17-17 10-2 15-7 17-17Z" fill="#f8dd83"/>
+          <path d="M119 68c1 6 4 9 10 10-6 1-9 4-10 10-1-6-4-9-10-10 6-1 9-4 10-10Z" fill="#d9ffa6"/>
+          <path d="M294 46c1.4 7.3 5.1 11 12.4 12.4C299.1 59.8 295.4 63.5 294 71c-1.4-7.5-5.1-11.2-12.4-12.6C288.9 57 292.6 53.3 294 46Z" fill="#efdcff"/>
+          <circle cx="76" cy="197" r="4" fill="#f6c1ec"/>
+          <circle cx="362" cy="63" r="3" fill="#d9ffa6"/>
+          <circle cx="427" cy="224" r="3" fill="#e8c1fd"/>
+
+          <path d="M98 241c6-25 23-36 51-36h206c25 0 46 11 53 36l5 14H90l8-14Z" fill="#371d65"/>
+          <path d="M118 232c9-13 22-17 39-17h192c16 0 30 5 41 17" stroke="#ae7cdb" stroke-width="3" stroke-linecap="round"/>
+
+          <path d="M236 230c-37-9-62-42-52-79 6-20 24-38 30-63 29 18 42 40 39 67-2 29-12 57-17 75Z" fill="url(#leaf)" stroke="#3e8a63" stroke-width="2.4"/>
+          <path d="M238 228c14-37 12-64-3-88m-2 48-25-16m31 1 8-17m-7 52-21-13" stroke="#e0ffae" stroke-opacity=".77" stroke-width="3" stroke-linecap="round"/>
+          <path d="M244 235c-12-45 2-77 43-98 0 22 17 39 8 61-8 20-25 32-51 37Z" fill="#73da95" stroke="#3e8a63" stroke-width="2.4"/>
+          <path d="M250 230c16-14 23-31 27-54m-10 29 15-6" stroke="#d4fba6" stroke-width="3" stroke-linecap="round"/>
+
+          <g transform="rotate(9 335 186)">
+            <path d="m306 130 18-27h44l20 27v106h-82V130Z" fill="url(#carton)" stroke="#9d9ddb" stroke-width="2.3"/>
+            <path d="M323 103h46v10h-46z" fill="#f8f5ff" stroke="#aeb2e3" stroke-width="2"/>
+            <path d="m363 130 5-17 20 17v106h-25V130Z" fill="#bac6fa"/>
+            <path d="M307 131h56m-56 79h56m0 0 25-7" stroke="#a5a8e6" stroke-width="2.3"/>
+            <path d="M307 211h56v25h-56z" fill="#95aaf9"/>
+            <path d="m363 211 25-8v33h-25v-25Z" fill="#8199f5"/>
+            <path d="M335 150c5 8 14 16 14 24a14 14 0 0 1-28 0c0-8 9-16 14-24Z" fill="#7788e4"/>
+            <path d="M329 174c0 3 2 5 5 6" stroke="#f4f6ff" stroke-width="2.5" stroke-linecap="round"/>
+          </g>
+
+          <path d="m101 132 1-15c0-5 4-7 9-6l12 4c4 1 5 4 3 7l-5 13-20-3Z" fill="#82b753" stroke="#527441" stroke-width="2.3"/>
+          <path d="M103 128c-9 21-9 42 3 62 14 25 40 42 73 40 36-2 63-31 72-67l-12-7c-13 20-34 33-58 34-30 2-56-22-59-59l-19-3Z" fill="url(#banana)" stroke="#dc9141" stroke-width="2.5"/>
+          <path d="M112 151c1 39 31 67 65 68 28 1 50-17 62-41" stroke="#fff3ae" stroke-width="4" stroke-linecap="round"/>
+          <path d="m240 156 8-4c4 2 7 5 7 9l-4 7-11-12Z" fill="#975c43"/>
+
+          <g transform="rotate(-16 278 222)">
+            <path d="M247 231c0-17 14-38 31-38s31 21 31 38c0 14-13 21-31 21s-31-7-31-21Z" fill="#fff4d4" stroke="#ddbb8c" stroke-width="2.4"/>
+            <ellipse cx="278" cy="230" rx="16.5" ry="14" fill="#ffd068"/>
+            <path d="M270 227c2-4 5-6 10-6" stroke="#fff0a9" stroke-width="2.6" stroke-linecap="round"/>
+          </g>
+
+          <path d="M96 248h312l-20 62c-4 13-16 21-30 21H145c-14 0-26-8-30-21l-19-62Z" fill="url(#lunchbox)" stroke="#358766" stroke-width="2.7"/>
+          <path d="M119 298c6 15 14 20 28 20h207c14 0 24-5 30-17" stroke="#b8f9d8" stroke-width="3" stroke-linecap="round" opacity=".7"/>
+          <rect x="85" y="232" width="335" height="25" rx="12.5" fill="#c9f6a7" stroke="#448c64" stroke-width="2.4"/>
+          <path d="M103 240h298" stroke="#edffd1" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="236" cy="280" r="3.8" fill="#24533e"/>
+          <circle cx="266" cy="280" r="3.8" fill="#24533e"/>
+          <path d="M245 288c3 6 9 6 12 0" stroke="#24533e" stroke-width="2.9" stroke-linecap="round"/>
+          <ellipse cx="224" cy="289" rx="7" ry="3.8" fill="#f8b5b9"/>
+          <ellipse cx="278" cy="289" rx="7" ry="3.8" fill="#f8b5b9"/>
+        </svg>
+      </div>
+
+      <div class="topics">
+        <article class="topic">
+          <span class="topic-icon">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 8c-2-2-7-2-8.6 1.7C1.9 13 4.7 21 8 21c1.5 0 2.6-1 4-1s2.5 1 4 1c3.3 0 6.1-8 4.6-11.3C19 6 14 6 12 8Zm0 0c0-3 2-5.5 5-5.5m-5 4C9.1 6.5 7 5 7 2.8c3.1 0 5 1.3 5 3.7Z"/>
+            </svg>
+          </span>
+          <div>
+            <p>Bahagian A · Soalan 1–3</p>
+            <h2>Jenis Makanan Berkhasiat</h2>
+          </div>
+        </article>
+        <article class="topic">
+          <span class="topic-icon">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 21C9 19 3 15 3 9.5A4.5 4.5 0 0 1 12 7a4.5 4.5 0 0 1 9 2.5c0 5.5-6 9.5-9 11.5Z"/>
+              <path d="M8 12h2l1.5-2.5L13 15l1.5-3H16"/>
+            </svg>
+          </span>
+          <div>
+            <p>Bahagian B · Soalan 4–6</p>
+            <h2>Kepentingan Pengambilan Makanan Berkhasiat</h2>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="play-screen" id="quiz" aria-labelledby="question" hidden>
+      <div class="progress-header">
+        <p class="quiz-name">Berkhasiat dan Selamat</p>
+        <p class="progress-label" id="progress-label"></p>
+      </div>
+      <div class="progress-steps" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <div class="question-card">
+        <span class="eyebrow" id="part"></span>
+        <h1 id="question" tabindex="-1" aria-describedby="progress-label instruction"></h1>
+        <p class="instruction" id="instruction">Pilih satu jawapan yang betul.</p>
+        <div class="answers" role="group" aria-label="Pilihan jawapan">
+          <button class="answer" type="button"><span class="letter">A</span><span class="answer-copy"></span></button>
+          <button class="answer" type="button"><span class="letter">B</span><span class="answer-copy"></span></button>
+          <button class="answer" type="button"><span class="letter">C</span><span class="answer-copy"></span></button>
+        </div>
+        <div id="response">
+          <div class="feedback" id="feedback" tabindex="-1" role="group" aria-labelledby="feedback-title" aria-describedby="feedback-detail" hidden>
+            <span class="feedback-icon" id="feedback-icon" aria-hidden="true"></span>
+            <div>
+              <h2 id="feedback-title"></h2>
+              <p id="feedback-detail"></p>
+            </div>
+          </div>
+          <div class="quiz-actions">
+            <button class="primary next" id="next" type="button" disabled>
+              Seterusnya
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="result" id="result" aria-labelledby="result-title" hidden>
+      <span class="result-mark">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M7 3h10v6a5 5 0 0 1-10 0V3Zm0 2H3v2a4 4 0 0 0 4 4m10-6h4v2a4 4 0 0 1-4 4m-5 3v5m-4 2h8"/>
+        </svg>
+      </span>
+      <h1 id="result-title" tabindex="-1" aria-describedby="score-value">Kuiz Selesai!</h1>
+      <p class="result-message" id="result-message"></p>
+      <div class="score-card">
+        <p class="score-label">Skor kamu</p>
+        <p class="score-value" id="score-value"><span id="score"></span> <small>daripada 6</small></p>
+      </div>
+      <button class="primary" id="restart" type="button">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a8 8 0 1 1 1.8 6.7M4 5v6h6"/></svg>
+        Main Semula
+      </button>
+    </section>
+  </main>
+
+  <script>
+    "use strict";
+
+    const questions = [
+      {
+        prompt: "Aina mahu membawa buah sebagai bekal. Apakah yang patut dia pilih?",
+        options: ["Biskut", "Pisang", "Roti"],
+        correct: 1,
+        explanation: "Pisang ialah sejenis buah."
+      },
+      {
+        prompt: "Ibu hendak memasak sayur. Yang manakah sayur?",
+        options: ["Bayam", "Nasi", "Ikan"],
+        correct: 0,
+        explanation: "Bayam ialah sejenis sayur."
+      },
+      {
+        prompt: "Apakah pilihan sarapan yang berkhasiat?",
+        options: ["Coklat dan aiskrim", "Telur rebus dan susu", "Gula-gula dan air manis"],
+        correct: 1,
+        explanation: "Telur rebus dan susu membekalkan protein."
+      },
+      {
+        prompt: "Ravi makan sarapan berkhasiat. Apakah kebaikan yang dia dapat?",
+        options: ["Tenaga", "Rasa lapar", "Rasa mengantuk"],
+        correct: 0,
+        explanation: "Sarapan berkhasiat memberi tenaga untuk bermain dan belajar."
+      },
+      {
+        prompt: "Hana makan nasi, ikan dan sayur. Bagaimanakah makanan itu membantu badannya?",
+        options: ["Badan menjadi kecil", "Badan mudah lapar", "Badan membesar dengan baik"],
+        correct: 2,
+        explanation: "Makanan berkhasiat membantu badan membesar dengan baik."
+      },
+      {
+        prompt: "Mengapakah kita perlu makan buah dan sayur setiap hari?",
+        options: ["Supaya badan mudah sakit", "Supaya badan kekal sihat", "Supaya badan cepat letih"],
+        correct: 1,
+        explanation: "Buah dan sayur membantu badan kekal sihat."
+      }
+    ];
+
+    const parts = [
+      "Bahagian A · Jenis Makanan Berkhasiat",
+      "Bahagian B · Kepentingan Pengambilan Makanan Berkhasiat"
+    ];
+
+    const byId = (id) => document.getElementById(id);
+    const intro = byId("intro");
+    const quiz = byId("quiz");
+    const result = byId("result");
+    const questionHeading = byId("question");
+    const progressLabel = byId("progress-label");
+    const progressSteps = Array.from(document.querySelectorAll(".progress-steps span"));
+    const part = byId("part");
+    const answers = Array.from(document.querySelectorAll(".answer"));
+    const next = byId("next");
+    const feedback = byId("feedback");
+    const feedbackTitle = byId("feedback-title");
+    const feedbackDetail = byId("feedback-detail");
+    const feedbackIcon = byId("feedback-icon");
+    const soundToggle = byId("sound-toggle");
+    const soundState = byId("sound-state");
+
+    let current = 0;
+    let score = 0;
+    let answered = false;
+    let soundEnabled = true;
+
+    function renderQuestion() {
+      const question = questions[current];
+      const partIndex = current < 3 ? 0 : 1;
+
+      answered = false;
+      feedback.hidden = true;
+      next.disabled = true;
+      part.textContent = parts[partIndex];
+      part.classList.toggle("part-b", partIndex === 1);
+      progressLabel.textContent = "Soalan " + (current + 1) + " daripada " + questions.length;
+      progressSteps.forEach((step, index) => {
+        step.className = index < current ? "done" : index === current ? "current" : "";
+      });
+      questionHeading.textContent = question.prompt;
+      answers.forEach((button, index) => {
+        button.querySelector(".answer-copy").textContent = question.options[index];
+        button.classList.remove("correct", "incorrect");
+        button.disabled = false;
+      });
+
+      questionHeading.focus({ preventScroll: true });
+      window.scrollTo(0, 0);
+    }
+
+    function beginQuiz() {
+      current = 0;
+      score = 0;
+      intro.hidden = true;
+      result.hidden = true;
+      quiz.hidden = false;
+      stopTrack("effect");
+      startMusic();
+      renderQuestion();
+    }
+
+    function chooseAnswer(selected) {
+      if (answered || quiz.hidden) return;
+      answered = true;
+
+      const question = questions[current];
+      const isCorrect = selected === question.correct;
+      if (isCorrect) {
+        score += 1;
+      } else {
+        answers[selected].classList.add("incorrect");
+      }
+      answers[question.correct].classList.add("correct");
+      answers.forEach((button) => { button.disabled = true; });
+
+      feedback.classList.toggle("incorrect", !isCorrect);
+      feedbackIcon.textContent = isCorrect ? "✓" : "!";
+      feedbackTitle.textContent = isCorrect ? "Betul! Syabas!" : "Belum tepat.";
+      feedbackDetail.textContent = isCorrect
+        ? question.explanation
+        : "Jawapan yang betul ialah " + question.options[question.correct].toLocaleLowerCase("ms-MY") + ". " + question.explanation;
+      feedback.hidden = false;
+      next.disabled = false;
+      playAnswerSound(isCorrect);
+
+      feedback.focus({ preventScroll: true });
+      byId("response").scrollIntoView({ block: "nearest" });
+    }
+
+    function advance() {
+      if (!answered || quiz.hidden) return;
+      if (current < questions.length - 1) {
+        current += 1;
+        renderQuestion();
+        return;
+      }
+
+      stopTrack("music");
+      quiz.hidden = true;
+      result.hidden = false;
+      byId("score").textContent = score;
+      byId("result-message").textContent = score === questions.length
+        ? "Hebat! Semua jawapan kamu betul."
+        : "Syabas kerana menyelesaikan kuiz!";
+      byId("result-title").focus({ preventScroll: true });
+      window.scrollTo(0, 0);
+    }
+
+    // Melodi dan kesan bunyi dijana terus supaya kuiz boleh dimainkan di luar talian.
+    const SAMPLE_RATE = 22050;
+    const MUSIC_LEVEL = 0.13;
+    let audio = null;
+
+    function addNote(samples, time, midi, length, level, timbre) {
+      const start = Math.round(time * SAMPLE_RATE);
+      const count = Math.min(Math.round(length * SAMPLE_RATE), samples.length - start);
+      const phaseStep = (2 * Math.PI * 440 * 2 ** ((midi - 69) / 12)) / SAMPLE_RATE;
+
+      for (let index = 0; index < count; index += 1) {
+        const phase = index * phaseStep;
+        const envelope = Math.min(index / 105, 1, (count - 1 - index) / 440)
+          * Math.exp(-4.2 * index / count);
+        const note = Math.sin(phase) + timbre[0] * Math.sin(phase * 2)
+          + timbre[1] * Math.sin(phase * 3);
+        samples[start + index] += note * envelope * level;
+      }
+    }
+
+    function makeMusic(context) {
+      const beat = 0.56;
+      const bars = [
+        { chord: [48, 55, 60, 64], tune: [72, 0, 76, 0, 79, 81, 79, 0] },
+        { chord: [53, 57, 60, 65], tune: [77, 0, 76, 74, 72, 0, 74, 0] },
+        { chord: [45, 52, 57, 60], tune: [76, 0, 79, 0, 81, 79, 76, 0] },
+        { chord: [43, 50, 55, 59], tune: [74, 0, 71, 0, 67, 0, 0, 0] },
+        { chord: [48, 55, 60, 64], tune: [72, 74, 76, 0, 79, 0, 81, 0] },
+        { chord: [53, 57, 60, 65], tune: [84, 0, 81, 79, 77, 0, 76, 0] },
+        { chord: [43, 50, 55, 59], tune: [74, 0, 79, 0, 83, 81, 79, 0] },
+        { chord: [48, 55, 60, 64], tune: [76, 0, 74, 0, 72, 0, 0, 0] }
+      ];
+      const buffer = context.createBuffer(1, Math.round(bars.length * 4 * beat * SAMPLE_RATE), SAMPLE_RATE);
+      const samples = buffer.getChannelData(0);
+      bars.forEach(({ chord, tune }, index) => {
+        const barStart = index * 4 * beat;
+        [0, 2.5].forEach((pulse) => {
+          chord.forEach((midi, string) => {
+            addNote(samples, barStart + pulse * beat + string * 0.017, midi, 0.56, 0.105, [0.35, 0.16]);
+          });
+        });
+        tune.forEach((midi, eighth) => {
+          if (midi) addNote(samples, barStart + eighth * beat / 2, midi, 0.39, 0.47, [0.15, 0.07]);
+        });
+      });
+      return buffer;
+    }
+
+    function makeCue(context, isCorrect) {
+      const buffer = context.createBuffer(1, Math.round(0.51 * SAMPLE_RATE), SAMPLE_RATE);
+      const samples = buffer.getChannelData(0);
+      const notes = isCorrect ? [79, 84] : [69, 65];
+      const timbre = isCorrect ? [0.32, 0.11] : [0.08, 0.025];
+      addNote(samples, 0, notes[0], 0.22, 0.9, timbre);
+      addNote(samples, 0.155, notes[1], 0.34, 1, timbre);
+      return buffer;
+    }
+
+    function updateSoundButton() {
+      soundToggle.setAttribute("aria-pressed", String(soundEnabled));
+      soundState.textContent = soundEnabled ? "Hidup" : "Mati";
+    }
+
+    function handleAudioFailure() {
+      soundEnabled = false;
+      soundToggle.disabled = true;
+      updateSoundButton();
+      stopTrack("music");
+      stopTrack("effect");
+    }
+
+    function getAudio() {
+      if (!soundEnabled) return null;
+      try {
+        if (!audio) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          const context = new AudioContext();
+          const musicGain = context.createGain();
+          const effectGain = context.createGain();
+          musicGain.gain.value = MUSIC_LEVEL;
+          effectGain.gain.value = 0.24;
+          musicGain.connect(context.destination);
+          effectGain.connect(context.destination);
+          audio = {
+            context, musicGain, effectGain,
+            musicBuffer: makeMusic(context),
+            correctCue: makeCue(context, true),
+            incorrectCue: makeCue(context, false),
+            music: null,
+            effect: null
+          };
+        }
+        if (audio.context.state !== "running") {
+          audio.context.resume().catch(handleAudioFailure);
+        }
+        return audio;
+      } catch {
+        handleAudioFailure();
+        return null;
+      }
+    }
+
+    function playTrack(key, buffer, output, loop = false) {
+      const source = audio.context.createBufferSource();
+      source.buffer = buffer;
+      source.loop = loop;
+      source.connect(output);
+      audio[key] = source;
+      source.onended = () => {
+        source.disconnect();
+        if (audio[key] === source) audio[key] = null;
+      };
+      source.start();
+    }
+
+    function stopTrack(key) {
+      const source = audio?.[key];
+      if (source) {
+        audio[key] = null;
+        source.stop();
+      }
+    }
+
+    function startMusic() {
+      const engine = getAudio();
+      if (!engine || engine.music) return;
+      const time = engine.context.currentTime;
+      engine.musicGain.gain.cancelScheduledValues(time);
+      engine.musicGain.gain.setValueAtTime(MUSIC_LEVEL, time);
+      playTrack("music", engine.musicBuffer, engine.musicGain, true);
+    }
+
+    function playAnswerSound(isCorrect) {
+      const engine = getAudio();
+      if (!engine) return;
+      stopTrack("effect");
+      const time = engine.context.currentTime;
+      engine.musicGain.gain.cancelScheduledValues(time);
+      engine.musicGain.gain.setTargetAtTime(0.045, time, 0.025);
+      engine.musicGain.gain.setTargetAtTime(MUSIC_LEVEL, time + 0.47, 0.12);
+      playTrack("effect", isCorrect ? engine.correctCue : engine.incorrectCue, engine.effectGain);
+    }
+
+    soundToggle.addEventListener("click", () => {
+      soundEnabled = !soundEnabled;
+      updateSoundButton();
+      if (!soundEnabled) {
+        stopTrack("music");
+        stopTrack("effect");
+      } else if (!quiz.hidden) {
+        startMusic();
+      }
+    });
+
+    byId("start").addEventListener("click", beginQuiz);
+    byId("restart").addEventListener("click", beginQuiz);
+    next.addEventListener("click", advance);
+    answers.forEach((button, index) => {
+      button.addEventListener("click", () => chooseAnswer(index));
+    });
+  </script>
+</body>
+</html>
